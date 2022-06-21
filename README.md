@@ -39,3 +39,26 @@ GET /hello
 
 #### 각각의 스키마를 저장하고 배열 또는 1개의 객체로 불러오는 것이 가능하다.
  - 1개의 객체를 불러올 경우 argument가 필요하다.
+ ```
+ GET api/Tweet/:id
+ ```
+ 같은 느낌
+
+
+ #### Mutation
+  - Post, DELETE, PUT 등의 역할과 같다
+  - 백엔드에서 보여지고 싶지않은 데이터를 사용하고자 할때의 타입이다.
+
+```
+mutation Mutation($text: String, $userId: ID) {
+  postTweet(text: $text, userId: $userId) {
+    id
+    author {
+      username
+      id
+    }
+    text
+  }
+}
+```
+ - Mutation의 경우 Query를 작성할때 명시적으로 적어야 한다.

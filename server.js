@@ -20,6 +20,11 @@ const typeDefs = gql`
         allTweets : [Tweet]
         Tweet(id:ID):Tweet
     }
+
+    type Mutation{
+        postTweet(text:String, userId : ID) : Tweet
+        deleteTweet(id:ID) : Boolean
+    }
 `;
 // 배열 형태의 Tweet 리턴
 // 1개의 Tweet 사용 ==> argument 필요 ==> id를 받아서 표현
