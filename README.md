@@ -62,3 +62,11 @@ mutation Mutation($text: String, $userId: ID) {
 }
 ```
  - Mutation의 경우 Query를 작성할때 명시적으로 적어야 한다.
+
+ #### ! (느낌표) 사용
+  - required 표현
+  - Not Null과 같은 표현이다.
+  ```
+  allTweets : [Tweet!]!
+  ```
+  - 무조건 Tweet에 의한 배열을 리턴한다는 뜻이다.
