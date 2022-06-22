@@ -192,3 +192,32 @@ mutation Mutation($text: String, $userId: ID) {
   }
   ```
   - 위의 코드에서 postTweet이 실행될때 userId가 들어가게 되고 해당 userId는 return 되는 Tweet에서 root argument의 userId로 users를 참조하여 해당 데이터를 가져온다.
+
+
+  #### schema description
+   ```
+   https://studio.apollographql.com/sandbox/schema/reference
+   ```
+  - 위를 보면 본인이 정의한 스키마를 확인하는데 description이 필요할 때가 있다.
+  - 작성법은 아래와 같다.
+
+  ```
+  type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    """
+    Is the sum of first Name and Last Name
+    """
+    fullName : String!
+  }
+  ```
+
+  - 원하는 대상 위에 """{contents}""" 를 쓰면 된다.
+
+  ```
+  https://altair.sirmuel.design/
+  ```
+
+  - apollo 서버에서 제공하는 API를 확인하는 서드파티 프로그램 혹은 웹이다.
+

@@ -8,12 +8,12 @@ let tweets = [
     {
         id: "1",
         text: "first",
-        userId : "2"
+        userId: "2"
     },
     {
         id: "2",
         text: "second",
-        userId : "1"
+        userId: "1"
     }
 ]
 let users = [
@@ -31,12 +31,20 @@ let users = [
 ]
 //SDL ==> Schema Definition Language
 const typeDefs = gql`
+
 type User {
     id: ID!
     firstName: String!
     lastName: String!
+    """
+    Is the sum of first Name and Last Name
+    """
     fullName : String!
   }
+
+    """
+    Tweet object represents a resourece for Tweet
+    """
   type Tweet {
     id: ID!
     text: String!
@@ -50,6 +58,7 @@ type User {
   }
   type Mutation {
     postTweet(text: String!, userId: ID!): Tweet!
+    """Delete a Tweet if found, els returns false"""
     deleteTweet(id: ID!): Boolean!
   }
 `;
@@ -75,16 +84,15 @@ const resolvers = {
         //postTweet(text: String!, userId: ID!): Tweet!
         postTweet(_, { text, userId }) {
             try {
-                if(users.find(user=>user.id === userId))
-                {
+                if (users.find(user => user.id === userId)) {
                     const newTweet = {
                         id: tweets.length + 1,
                         text: text,
                         userId
                     }
                     tweets.push(newTweet);
-                    return newTweet;    
-                }else{
+                    return newTweet;
+                } else {
                     throw new Error("no User there");
                 }
             } catch (error) {
@@ -99,17 +107,17 @@ const resolvers = {
             return true;
         }
     },
-    User:{
-        firstName({firstName}){
+    User: {
+        firstName({ firstName }) {
             return firstName;
         },
-        fullName({firstName, lastName}){
-            return `${firstName} ${lastName}` ;
+        fullName({ firstName, lastName }) {
+            return `${firstName} ${lastName}`;
         }
     },
-    Tweet : {
-        author({userId}){
-            return users.find(u=>u.id === userId);
+    Tweet: {
+        author({ userId }) {
+            return users.find(u => u.id === userId);
         }
     }
 }
