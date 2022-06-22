@@ -8,10 +8,12 @@ let tweets = [
     {
         id: "1",
         text: "first",
+        userId : "2"
     },
     {
         id: "2",
         text: "second",
+        userId : "1"
     }
 ]
 let users = [
@@ -38,6 +40,7 @@ type User {
   type Tweet {
     id: ID!
     text: String!
+    author : User
   }
   type Query {
     allTweets: [Tweet!]!
@@ -71,12 +74,22 @@ const resolvers = {
     Mutation: {
         //postTweet(text: String!, userId: ID!): Tweet!
         postTweet(_, { text, userId }) {
-            const newTweet = {
-                id: tweets.length + 1,
-                text: text,
+            try {
+                if(users.find(user=>user.id === userId))
+                {
+                    const newTweet = {
+                        id: tweets.length + 1,
+                        text: text,
+                        userId
+                    }
+                    tweets.push(newTweet);
+                    return newTweet;    
+                }else{
+                    throw new Error("no User there");
+                }
+            } catch (error) {
+                console.log(error)
             }
-            tweets.push(newTweet);
-            return newTweet;
         },
         deleteTweet(_, { id }) {
             // Boolean!
@@ -87,13 +100,16 @@ const resolvers = {
         }
     },
     User:{
+        firstName({firstName}){
+            return firstName;
+        },
         fullName({firstName, lastName}){
-            //fullName은 다이나믹 로직이다.
-            //data에는 없지만, resolver에서 확인되었기때문에 호출하여 실행
-
-            // console.log(root)
-            //allUsers를 실행시키면 User fullName을 실행하여 반환
             return `${firstName} ${lastName}` ;
+        }
+    },
+    Tweet : {
+        author({userId}){
+            return users.find(u=>u.id === userId);
         }
     }
 }

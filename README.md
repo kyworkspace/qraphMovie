@@ -96,33 +96,36 @@ mutation Mutation($text: String, $userId: ID) {
   #### resolver _root
    - resolver 의 root는 각 데이터의 객체가 들어가있다
    - 데이터가 아래와 같은 경우
-   ```
-    let users = [
-        {
-            id: "1",
-            firstName: "park",
-            lastName: "KIYOUNG",
-        },
-        {
-            id: "2",
-            firstName: "Egon",
-            lastName: "Ailyon",
-            //fullName은 다이나믹 로직이다.
-        }
-    ]
-   ```
+  ```
+  let users = [
+      {
+          id: "1",
+          firstName: "park",
+          lastName: "KIYOUNG",
+      },
+      {
+          id: "2",
+          firstName: "Egon",
+          lastName: "Ailyon",
+          //fullName은 다이나믹 로직이다.
+      }
+  ]
+  ```
+
     - 그리고 각 데이터를 호출하는 함수를 아래와 같이 했을때
-    ```
-    User(root){
-      console.log(root)
-      return users;
-    }
-    ```
-    - console.log(root)에 찍히는 것은 아래와 같다.
-    ```
+
+  ```
+  User(root){
+    console.log(root)
+    return users;
+  }
+  ```
+  - console.log(root)에 찍히는 것은 아래와 같다.
+
+  ```
     { id: '1', firstName: 'park', lastName: 'KIYOUNG' }
     { id: '2', firstName: 'Egon', lastName: 'Ailyon' }
-    ```
+  ```
 
   #### 다이나믹 로직
   1. 위의 users 데이터에서 fullname을 가지고 싶다.
@@ -146,3 +149,46 @@ mutation Mutation($text: String, $userId: ID) {
 
   - 위의 코드를 통해 Query에서 allUsers를 실행시키게 되면 Apollo 서버가 user 의 fullName을 찾을 때 resolver의 fullName을 참고하게 된다.
   - 그래서 실제 데이터는 없지만 String! 에 위배 되지 않게, firstName 과 lastName이 조합된 모습을 볼 수 있다.
+
+
+  #### connection
+   - tweet을 저장할때 author이라는 user를 매핑하고 싶다.
+   - postTweet을 할때 userId를 추가로 받는다. Tweet에 author:User! 추가해 준다.
+   - resolvers에 아래와 같은 코드를 추가해준다.
+   ```
+   const resolvers = {
+      Query: {
+          allTweets() {
+              return tweets;
+          },
+          ...
+      },
+      Mutation: {
+        ...,
+          postTweet(_, { text, userId }) {
+              try {
+                  if(users.find(user=>user.id === userId))
+                  {
+                      const newTweet = {
+                          id: tweets.length + 1,
+                          text: text,
+                          userId
+                      }
+                      tweets.push(newTweet);
+                      return newTweet;    
+                  }else{
+                      throw new Error("no User there");
+                  }
+              } catch (error) {
+                  console.log(error)
+              }
+          },
+      ...,
+      Tweet : {
+          author({userId}){
+              return users.find(u=>u.id === userId);
+          }
+      }
+  }
+  ```
+  - 위의 코드에서 postTweet이 실행될때 userId가 들어가게 되고 해당 userId는 return 되는 Tweet에서 root argument의 userId로 users를 참조하여 해당 데이터를 가져온다.
