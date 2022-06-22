@@ -91,3 +91,58 @@ mutation Mutation($text: String, $userId: ID) {
     }
  ```
   * 위에서 {id} 부분이 typeDefs에서 정의한 ID가 들어가는 곳이다.
+
+
+  #### resolver _root
+   - resolver 의 root는 각 데이터의 객체가 들어가있다
+   - 데이터가 아래와 같은 경우
+   ```
+    let users = [
+        {
+            id: "1",
+            firstName: "park",
+            lastName: "KIYOUNG",
+        },
+        {
+            id: "2",
+            firstName: "Egon",
+            lastName: "Ailyon",
+            //fullName은 다이나믹 로직이다.
+        }
+    ]
+   ```
+    - 그리고 각 데이터를 호출하는 함수를 아래와 같이 했을때
+    ```
+    User(root){
+      console.log(root)
+      return users;
+    }
+    ```
+    - console.log(root)에 찍히는 것은 아래와 같다.
+    ```
+    { id: '1', firstName: 'park', lastName: 'KIYOUNG' }
+    { id: '2', firstName: 'Egon', lastName: 'Ailyon' }
+    ```
+
+  #### 다이나믹 로직
+  1. 위의 users 데이터에서 fullname을 가지고 싶다.
+  2. 그래서 defs에 fullName : String! 을 추가해주었다.
+  3. 하지만 실질적인 데이터는 없다.
+  4. resolver에 추가해주면 된다.
+  ```
+  Query: {
+        ...,
+        allUsers() {
+            return users;
+        }
+    },
+  User:{
+    ...,
+        fullName({firstName, lastName}){
+            return `${firstName} ${lastName}` ;
+        }
+    }
+  ```
+
+  - 위의 코드를 통해 Query에서 allUsers를 실행시키게 되면 Apollo 서버가 user 의 fullName을 찾을 때 resolver의 fullName을 참고하게 된다.
+  - 그래서 실제 데이터는 없지만 String! 에 위배 되지 않게, firstName 과 lastName이 조합된 모습을 볼 수 있다.
