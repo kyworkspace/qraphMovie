@@ -221,3 +221,6 @@ mutation Mutation($text: String, $userId: ID) {
 
   - apollo 서버에서 제공하는 API를 확인하는 서드파티 프로그램 혹은 웹이다.
 
+
+ #### REST API 를 GraphQL 가져와보기
+ - resolver에서 node-fetch를 사용해서 해당 데이터를 불러온다.

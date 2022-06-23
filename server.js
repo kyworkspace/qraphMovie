@@ -1,6 +1,7 @@
 // pakage.json에 type module을 추가해주면 require가 아닌 import 사용 가능
 
 import { ApolloServer, gql } from 'apollo-server';
+import fetch from 'node-fetch';
 
 
 //graphql 의 법칙을 따라야함
@@ -55,12 +56,37 @@ type User {
     tweet(id: ID!): Tweet
     ping:String!
     allUsers:[User!]!
+    allMovies:[Movie!]!
+    movie(id:String!) : Movie
   }
   type Mutation {
     postTweet(text: String!, userId: ID!): Tweet!
     """Delete a Tweet if found, els returns false"""
     deleteTweet(id: ID!): Boolean!
   }
+  type Movie {
+    id: Int!
+    url: String!
+    imdb_code: String!
+    title: String!
+    title_english: String!
+    title_long: String!
+    slug: String!
+    year: Int!
+    rating: Float!
+    runtime: Float!
+    genres: [String]!
+    summary: String
+    description_full: String!
+    synopsis: String
+    yt_trailer_code: String!
+    language: String!
+    background_image: String!
+    background_image_original: String!
+    small_cover_image: String!
+    medium_cover_image: String!
+    large_cover_image: String!
+    }
 `;
 // 배열 형태의 Tweet 리턴
 // 1개의 Tweet 사용 ==> argument 필요 ==> id를 받아서 표현
@@ -77,6 +103,16 @@ const resolvers = {
         allUsers() {
             console.log("all users Called")
             return users;
+        },
+        allMovies() {
+            return fetch("https://yts.mx/api/v2/list_movies.json").then(res => res.json()).then(json => {
+                return json.data.movies
+            });
+        },
+        movie(_, {id}) {
+            return fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+            .then(res =>res.json())
+            .then(json => json.data.movie);
         }
 
     },
